@@ -143,6 +143,7 @@ target:
       - __quantum__rt__tuple_end_record_output:void ()
       - __quantum__rt__array_start_record_output:void ()
     allowed-pointer-types:
+      - ptr
       - Result*
       - Qubit*
   qis:

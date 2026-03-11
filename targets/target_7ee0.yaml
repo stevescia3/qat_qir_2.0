@@ -137,6 +137,7 @@ target:
       - __quantum__rt__array_start_record_output:void ()
       - __quantum__rt__bool_record_output:void (i1, i8*)
     allowed-pointer-types:
+      - ptr
       - i8*
       - Qubit*
       - Result*
