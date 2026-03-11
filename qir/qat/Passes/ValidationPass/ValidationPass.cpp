@@ -141,8 +141,6 @@ void ValidationPass::pointerChecks(Instruction& instr)
     }
 }
 
-}
-
 bool ValidationPass::satisfyingOpcodeRequirements(llvm::Module& module)
 {
     auto ret = true;
