@@ -86,6 +86,21 @@ void ValidationPass::pointerChecks(Instruction& instr)
             continue;
         }
 
+        String name{};
+
+#if LLVM_VERSION_MAJOR >= 15
+        // LLVM 15+ uses opaque pointers by default, so element types are not available/meaningful.
+        // Record as "ptr" or "ptr addrspace(N)" so YAML allowlists can match.
+        auto const addrspace = pointer_type->getAddressSpace();
+        if (addrspace == 0)
+        {
+            name = "ptr";
+        }
+        else
+        {
+            name = "ptr addrspace(" + std::to_string(addrspace) + ")";
+        }
+#else
         uint64_t    n            = 1;
         llvm::Type* element_type = op->getType()->getPointerElementType();
         while (pointer_type == llvm::dyn_cast<llvm::PointerType>(element_type))
@@ -93,8 +108,6 @@ void ValidationPass::pointerChecks(Instruction& instr)
             element_type = op->getType()->getPointerElementType();
             ++n;
         }
-
-        String name{};
 
         if (element_type->isStructTy())
         {
@@ -112,6 +125,7 @@ void ValidationPass::pointerChecks(Instruction& instr)
             name += "*";
             --n;
         }
+#endif
 
         auto it = pointers_.find(name);
         if (it == pointers_.end())
@@ -125,6 +139,8 @@ void ValidationPass::pointerChecks(Instruction& instr)
 
         pointer_location_[name].push_back(current_location_);
     }
+}
+
 }
 
 bool ValidationPass::satisfyingOpcodeRequirements(llvm::Module& module)
